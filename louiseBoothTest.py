@@ -93,10 +93,10 @@ def take_a_pic():
             #glass_trans = int(.2 * (eye_center - y))
     
             #Funny tanslation
-            glass_trans = int(-.3 * (eye_center - y ))
+            #glass_trans = int(-.3 * (eye_center - y ))
     
             # Mask translation
-            #glass_trans = int(-.2 * (eye_center - coord['y']))
+            glass_trans = int(-.2 * (eye_center - coord['y']))
     
             # Snap filter translation
             #glass_trans = int(-1.3 * (eye_center - y))
