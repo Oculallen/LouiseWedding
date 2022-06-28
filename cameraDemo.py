@@ -26,9 +26,6 @@ def load_filter():
     elif name == "mouth":
         offset = -70
         face_resize = 0.8
-    elif name == "neck":
-        offset = -180
-        face_resize = 0.6
     elif name == "head":
         offset = 120
         face_resize = 1.2
@@ -65,8 +62,8 @@ def get_left_eye(img, landmarks):
         landmarks (FaceMesh landmark list): list of landmarks
     """
     shape = img.shape
-    x = (int((landmarks[159].x + landmarks[153].x)*shape[1])/2)
-    y = (int((landmarks[159].y + landmarks[153].y)*shape[0])/2)
+    x = (int((landmarks[159].x)*shape[1]))
+    y = (int((landmarks[159].y)*shape[0]))
 
     return (x,y)
 
@@ -77,8 +74,8 @@ def get_right_eye(img, landmarks):
         landmarks (FaceMesh landmark list): list of landmarks
     """
     shape = img.shape
-    x = (int((landmarks[386].x + landmarks[380].x)*shape[1])/2)
-    y = (int((landmarks[386].y + landmarks[380].y)*shape[0])/2)
+    x = (int((landmarks[386].x)*shape[1]))
+    y = (int((landmarks[386].y)*shape[0]))
 
     return (x,y)
 
@@ -145,7 +142,7 @@ def take_pic_2():
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     try:
-        results = detect_faces(img, maxPeople=20, minConfidence=0.5)
+        results = detect_faces(img, maxPeople=10, minConfidence=0.5)
 
         for face in results.multi_face_landmarks:
             try:
