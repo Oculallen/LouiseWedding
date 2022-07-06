@@ -1,19 +1,28 @@
 from tkinter import *
 from customtkinter import *
 from menu_items import *
+from NormalPic import *
 
 class App(CTk):
+    #Cool shit happens here
     def __init__(self):
         super().__init__()
         self.attributes("-fullscreen", True)
         self.protocol("WM_DELETE_WINDOW", self.end)
-        self.resizable(False, False)
 
-        self.grid_columnconfigure(0,weight=1)
-        self.grid_rowconfigure(0,weight=1)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.menu = None
 
-        self.menu = MainMenu(self)
-        self.menu.grid(column=0, row=0, sticky=(N,S))
+        self.switch_menu(MainMenu)
+
+    def switch_menu(self, menu_class, *args, **kwargs):
+        new_menu = menu_class(self, *args, **kwargs)
+        if self.menu is not None:
+            self.menu.destroy()
+        self.menu = new_menu
+
+        self.menu.grid(column=0, row=0, sticky=NSEW)
 
     def start(self):
         self.mainloop()

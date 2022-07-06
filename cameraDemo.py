@@ -6,8 +6,9 @@ import math
 from PIL import Image
 import random
 import os
+import time
 
-#MP SETUP
+#MP SETUP5
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
@@ -133,8 +134,8 @@ def shift_center(eye_center, degree, shift):
         shift_y = math.cos(angle) * shift
     return (int(eye_center[0]+shift_x), int(eye_center[1]+shift_y))
 
-def take_pic_2():
-    ret, img = video_capture.read()
+def take_pic_2(source):
+    ret, img = source.read()
     if not ret:
         print("failed to grab frame")
     img = resize(img, 700)
@@ -171,15 +172,17 @@ def take_pic_2():
                 img_copy = img
             except BaseException as err:
                 print(err)
-            cv2.imwrite("mediaTest.png", img_copy)
+            cv2.imwrite("picture-" + time.strftime("%d-%m-%Y-%H-%M") + ".jpg", img_copy)
             print("Done")
     except BaseException as err:
         print(err)
 
-def take_pic():
-    ret, img = video_capture.read()
+def take_pic(source):
+    ret, img = source.read()
     if not ret:
         print("failed to grab frame")
+        return
+
     img = resize(img, 700)
     img_copy = img.copy()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
