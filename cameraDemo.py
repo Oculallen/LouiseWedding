@@ -134,7 +134,7 @@ def shift_center(eye_center, degree, shift):
         shift_y = math.cos(angle) * shift
     return (int(eye_center[0]+shift_x), int(eye_center[1]+shift_y))
 
-def take_pic_2(source):
+def take_pic_2(source, gray=False):
     ret, img = source.read()
     if not ret:
         print("failed to grab frame")
@@ -172,8 +172,10 @@ def take_pic_2(source):
                 img_copy = img
             except BaseException as err:
                 print(err)
-            cv2.imwrite("picture-" + time.strftime("%d-%m-%Y-%H-%M") + ".jpg", img_copy)
+
             print("Done")
+            return True, cv2.cvtColor(resize(img_copy, 1250), cv2.COLOR_BGR2RGB)
+
     except BaseException as err:
         print(err)
 

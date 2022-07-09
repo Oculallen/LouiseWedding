@@ -5,6 +5,7 @@ from NormalPic import *
 
 class App(CTk):
     #Cool shit happens here
+    #Nice
     def __init__(self):
         super().__init__()
         self.attributes("-fullscreen", True)

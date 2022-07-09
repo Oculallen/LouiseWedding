@@ -7,23 +7,31 @@ from PIL import Image, ImageTk
 import cv2 as cv
 import time
 from cameraDemo import *
+import math
+from ConfirmPage import *
 
 class PicPreview(CTkFrame):
     def __init__(self, master, source: int=0, filters: bool=False):
-        super().__init__(master)
+        global swap; swap = False            
+
+        super().__init__()
         self.cam = MyVideoCapture(source=source)
         self.preview = Canvas(master=self, width=self.cam.width, height=self.cam.height)
         self.master = master
         self.backButton = CTkButton(master=self, text="Back to Main menu",
                                     command=lambda: master.switch_menu(menu_items.MainMenu))
         self.inverseButton = CTkButton(master=self, text="Greyscale/Color",
-                                    command=self.cam.swapColor)
+                                    command=self.cam.swapColor, state=DISABLED if filters else NORMAL)
         self.picButton = CTkButton(master=self, text="TAKE A PIC",
                                     command=self.snap)
         self.filters = filters
         self.textID = None
         self.font = tkFont.Font(family='Helvetica',
-                                size=60, weight='bold')
+                                size=180, weight='bold')
+        #self.swap = lambda img: master.switch_menu(FinalImage, image=img)
+
+        self.time = 0
+        self.framerate = 20
 
         self.columnconfigure((0,1,2), weight=1)
         self.rowconfigure((0,1,2), weight=1)
@@ -36,35 +44,54 @@ class PicPreview(CTkFrame):
         self.update()
 
     def snap(self):
-        self.timer(3, self.get_frame)
+        self.time=3
 
     def get_frame(self):
         if self.filters == True:
-            take_pic_2(self.cam.vid)
+            ret, frame = take_pic_2(self.cam.vid)
 
         else:
             ret, frame = self.cam.get_frame()
 
-            if ret:
-                cv.imwrite("picture-" + time.strftime("%d-%m-%Y-%H-%M") + ".jpg", 
-                cv.cvtColor(frame, self.cam.color) if self.cam.color == cv.COLOR_BGR2RGB else frame)
+        if ret:
+            global swap; swap = True
+            self.master.switch_menu(FinalImage, image=frame, col=self.cam.color)
 
     def update(self):
+        if swap:
+            return
+
         ret, frame = self.cam.get_frame()
         if ret:
             self.photo = ImageTk.PhotoImage(image = Image.fromarray(frame))
             self.preview.create_image(0, 0, image = self.photo, anchor = NW)
 
-        self.master.after(40, self.update)
+        if self.time is not None:
+            if self.time > 0:
+                self.time -= (1000//self.framerate)/1000
+                if self.textID is not None:
+                    self.preview.delete(self.textID)
+            
+                self.textID = self.preview.create_text(self.cam.width//2, self.cam.height//2, 
+                                                        text=f'{math.ceil(self.time)}', font=self.font)
 
-    def timer(self, time: int, func):
-        if time < 1:
-            func()
+            elif self.time < 0:
+                self.get_frame()
+                self.time = None
+
+        self.master.after(1000//self.framerate, self.update)
+
+    def timer(self):
+        self.time -= 1
+
+        if self.time < 1:
+            self.get_frame()
             self.textID = None
             return
 
         if self.textID is not None:
             self.preview.delete(self.textID)
         
-        self.textID = self.preview.create_text(0, 0, text=f'{time}', font=self.font)
-        self.master.after(1000, self.timer(time-1, func))
+        self.textID = self.preview.create_text(self.cam.width//2, self.cam.height//2, 
+                                                text=f'{self.time}', font=self.font)
+        self.after(1000, self.timer)
