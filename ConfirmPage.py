@@ -3,13 +3,17 @@ import tkinter.font as tkFont
 from customtkinter import *
 from PIL import Image, ImageTk
 import cv2 as cv
+from NormalPic import *
 
 class FinalImage(CTkFrame):
-    def __init__(self, master, image=None, col=None):
+    def __init__(self, master, images=None, col=None, filters=None):
         super().__init__()
+        image = images[-1]
+        self.images = images
         print(image.shape)
         self.preview = CTkCanvas(master=self, width=image.shape[1], height=image.shape[0])
-        self.retryButton = CTkButton(self, text="Retry")
+        self.retryButton = CTkButton(self, text="Retry",
+                                    command=lambda: master.switch_menu(PicPreview, filters=filters, images=images[:-1]))
         self.takeAnother = CTkButton(self, text="Take Another")
         self.savePics = CTkButton(self, text="Save All Pics")
 

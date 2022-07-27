@@ -11,8 +11,9 @@ import math
 from ConfirmPage import *
 
 class PicPreview(CTkFrame):
-    def __init__(self, master, source: int=0, filters: bool=False):
-        global swap; swap = False            
+    def __init__(self, master, source: int=0, filters: bool=False, images=None):
+        global swap; swap = False
+        self.images = images            
 
         super().__init__()
         self.cam = MyVideoCapture(source=source)
@@ -55,7 +56,9 @@ class PicPreview(CTkFrame):
 
         if ret:
             global swap; swap = True
-            self.master.switch_menu(FinalImage, image=frame, col=self.cam.color)
+            if self.images is None:
+                self.images = []
+            self.master.switch_menu(FinalImage, images=self.images.append(frame) if self.images is not None else frame, col=self.cam.color, filters=self.filters)
 
     def update(self):
         if swap:
