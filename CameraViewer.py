@@ -6,8 +6,10 @@ import time
 class MyVideoCapture:
     def __init__(self, source: int=0):
         self.source = source
-        self.vid = PiCamera()
-        self.rawcap = PiRGBArray(self.vid)
+        self.vid = PiCamera(resolution=(1920,1080))
+        self.rawcap = PiRGBArray(self.vid, size=(1920,1080))
+        self.stream = self.camera.capture_continuous(self.rawCapture,
+            format="bgr")
         # ret, frame = self.vid.read()
         # res_frame = self.resize(frame)
         # if not self.vid.isOpened():
@@ -35,10 +37,12 @@ class MyVideoCapture:
         #         return (ret, None)
         # else:
         #     return (False, None)
-        self.vid.capture(self.rawcap, format="bgr")
-        image = self.rawcap.array
+        f = self.stream.__next__()
+        img = f.array
+        self.rawcap.truncate(0)
+        self.rawcap.seek(0)
 
-        return True, cv.cvtColor(self.resize(image), self.color)
+        return True, cv.cvtColor(self.resize(img), self.color)
 
     def resize(self, frame, width: int=1250):
         hFactor = width/frame.shape[1]

@@ -64,7 +64,7 @@ class PicPreview(CTkFrame):
         if swap:
             return
 
-        ret, frame = self.cam.get_frame()
+        frame = self.cam.get_frame()
         if ret:
             self.photo = ImageTk.PhotoImage(image = Image.fromarray(frame))
             self.preview.create_image(0, 0, image = self.photo, anchor = NW)
